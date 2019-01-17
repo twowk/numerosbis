@@ -35,16 +35,25 @@ public class ServeurThreadTCP extends Thread{
 			ois = new ObjectInputStream(socket.getInputStream()); 
 			while(true) {
 				etatClient = (String) ois.readObject(); 
+				System.out.println(etatClient);
+				System.out.println(numerosbis.hm_users);
 				
 				System.out.println("on enlève l'user de la hashmap");
 				if (numerosbis.hm_users.containsKey(addrClient)) numerosbis.hm_users.remove(addrClient);
 				
 				System.out.println("verification de l'état déconnecté");
-				if(etatClient.equals("Deconnexion")) break;
-				//Ajout à la hashmap
+				if(etatClient.equals("Deconnexion")) {
+					//On supprime l'ip et l'état du GUI
+					GUI_numerosbis.removeUser(addrClient);
+					break;
+				}
 				
+				//Ajout à la hashmap
 				System.out.println("On ajoute le client et son état à la hashmap");
 				numerosbis.hm_users.put(addrClient, etatClient);
+				
+				//Ajout au GUI
+				GUI_numerosbis.changeState(addrClient,etatClient);
 				
 				System.out.println("On envoie la sauce");
 				numerosbis.onenvoielasauce();
